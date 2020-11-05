@@ -206,7 +206,7 @@ def pretty_evaluate (confusion_matrix, trees, name):
 	print()
 	print('Average depth:', average_depth)
     
-	return precision, recall, f1, class_rate, depth
+	return precision, recall, f1, class_rate, average_depth
 
 #Precision and recall
 #Returns precision: float[4], recall: float[4]
