@@ -534,7 +534,7 @@ def plot_matrix(confusion_matrix, name):
 	predicted = ["Predicted class (1)", "Predicted class (2)", "Predicted class (3)", "Predicted class (4)"]
 	actual = ["Actual class (1)", "Actual class (2)", "Actual class (3)", "Actual class (4)"]
 	
-	confusion = np.round(confusion_matrix,1)
+	confusion = np.round(confusion_matrix,0)
 
 	fig, ax = plt.subplots()
 	
