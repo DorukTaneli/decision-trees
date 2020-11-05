@@ -387,7 +387,7 @@ VALIDATION
 """
 
 """
-STEP 1: The method train_test_split splits the data into a training set and a test set. 
+TRAIN-TEST-SPLIT: The method train_test_split splits the data into a training set and a test set.
 The method takes the dataset and the size of the test set as input (float value between 0 and 1, a common value would be 0.2).
 """ 
 #Return the train and the test set
@@ -406,7 +406,7 @@ def train_test_split(dataset, test_size_percent):
     return train, test
 
 """
-STEP 2: Devide the dataset into k folds for cross-validation
+K-FOLD SPLIT: Devide the dataset into k folds for cross-validation
 """
 def k_fold(k, dataset):
 	#k: number of folds for cross-valid
@@ -582,6 +582,10 @@ visualize_tree(clean_trees_prune[1], find_depth(clean_trees_prune[1]), "clean-pr
 plot_matrix(clean_average_matrix, 'Clean Average CM')
 plot_matrix(clean_average_matrix_prune, 'Clean Noisy Average CM')
 
+#Model trained on the entire clean dataset – not pruned (decision based on the outcome of nested cross-validation)
+final_tree_clean,_ = decision_tree_learning(clean)
+visualize_tree(final_tree_clean, 10)
+
 
 #NOISY DATA
 print("\nNOISY DATASET:")
@@ -592,6 +596,12 @@ visualize_tree(noisy_trees_prune[1], find_depth(noisy_trees_prune[1]), "noisy-pr
 
 plot_matrix(noisy_average_matrix, 'Noisy Average CM')
 plot_matrix(noisy_average_matrix_prune, 'Prune Noisy Average CM')
+
+# Model trained on the entire noisy data set – pruned (decision based on the outcome of nested cross-validation)
+train, val = train_test_split(noisy, 0.2)
+final_tree_noisy,_ = decision_tree_learning(train)
+final_tree_noisy_pruned = prune(final_tree_noisy, val)
+visualize_tree(final_tree_noisy_pruned, 20)
 
 
 
