@@ -175,7 +175,7 @@ PERFORMANCE MEASURMENTS/EVALUATION
 """
 #Calculate all metrics and pretty print
 #Returns printed evaluation metrics and average precision, recall, f1, class_rate
-def pretty_evaluate (confusion_matrix, trees, name):
+def pretty_evaluate (confusion_matrix, trees):
 	#confusion_matrix: the calculated confusion matrix, int [4][4]
 	#Get precision, recall, f1, classification_rate (accuracy)
 	precision, recall = get_precision_recall (confusion_matrix)
@@ -193,18 +193,16 @@ def pretty_evaluate (confusion_matrix, trees, name):
 	print('Actual class: \t\t(1) \t(2) \t(3) \t(4)')
 	for i in range(4):
 		print('Predicted class (%i):\t'%(i+1), round(confusion_matrix[i][0],0),'\t', round(confusion_matrix[i][1],0),'\t',round(confusion_matrix[i][2],0),'\t', round(confusion_matrix[i][3],0))
-	print()
 
-	plot_matrix(confusion_matrix, name)
 	print()
 
 	print('Class \t | Precision \t\t| Recall \t\t| F1')
 	for i in range(4):
-		print('(%i)\t |'%i, round(precision[i],4), '\t\t|', round(recall[i],4), '\t\t|', round(f1[i],4))
+		print('(%i)\t |'%i, format(round(precision[i],4),'.4f'), '\t\t|', format(round(recall[i],4), '.4f'), '\t\t|', format(round(f1[i],4),'.4f'))
 	print()
 	print('Average classification rate:', class_rate)
 	print()
-	print('Average depth:', average_depth)
+	print('Average depth:', round(average_depth))
     
 	return precision, recall, f1, class_rate, average_depth
 
@@ -484,19 +482,19 @@ def cross_validation(k, dataset, prune_tree=False):
         print("---------------------------")
         print("Results for the unpruned tree") 
         print("---------------------------")
-        pretty_evaluate(average_matrix, trees, 'cm_unprune')
+        pretty_evaluate(average_matrix, trees)
         print("")
         print("---------------------------")
         print("Results for the pruned tree") 
         print("---------------------------")
-        pretty_evaluate(average_matrix_prune, trees_prune, 'cm_prune')
+        pretty_evaluate(average_matrix_prune, trees_prune)
         return trees, trees_prune, average_matrix, average_matrix_prune
     else: 
         print("")
         print("---------------------------")
         print("Results for the unpruned tree") 
         print("---------------------------")
-        pretty_evaluate(average_matrix,trees, 'cm_unprune')
+        pretty_evaluate(average_matrix,trees)
         return trees, average_matrix
 
 """
@@ -509,8 +507,9 @@ def visualize_tree(tree, depth, name):
   dy = 1/depth	
   #calls for visualise node function 
   visualize_node(tree, 0, 1, 0, 1, dy, axes)
-  plt.show()
   plt.savefig(name + visualization_output_suffix +".png")
+  plt.show()
+
 
 
 #Visualises a node of the tree
@@ -562,8 +561,9 @@ def plot_matrix(confusion_matrix, name):
 				ha="center", va="center", color="black")
 
 	#fig.tight_layout()
-	plt.show()
 	plt.savefig(name + visualization_output_suffix + ".png")
+	plt.show()
+	
 
 
 """
@@ -579,6 +579,9 @@ clean_trees, clean_trees_prune, clean_average_matrix, clean_average_matrix_prune
 visualize_tree(clean_trees[1], find_depth(clean_trees[1]), "clean")
 visualize_tree(clean_trees_prune[1], find_depth(clean_trees_prune[1]), "clean-pruned")
 
+plot_matrix(clean_average_matrix, 'Clean Average CM')
+plot_matrix(clean_average_matrix_prune, 'Clean Noisy Average CM')
+
 
 #NOISY DATA
 print("\nNOISY DATASET:")
@@ -586,6 +589,9 @@ noisy_trees, noisy_trees_prune, noisy_average_matrix, noisy_average_matrix_prune
 
 visualize_tree(noisy_trees[1], find_depth(noisy_trees[1]), "noisy")
 visualize_tree(noisy_trees_prune[1], find_depth(noisy_trees_prune[1]), "noisy-pruned")
+
+plot_matrix(noisy_average_matrix, 'Noisy Average CM')
+plot_matrix(noisy_average_matrix_prune, 'Prune Noisy Average CM')
 
 
 
