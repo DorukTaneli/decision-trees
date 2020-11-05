@@ -484,7 +484,7 @@ def cross_validation(k, dataset, prune_tree=False):
         print("---------------------------")
         print("Results for the unpruned tree") 
         print("---------------------------")
-        pretty_evaluate(average_matrix, trees, name, 'cm_unprune')
+        pretty_evaluate(average_matrix, trees, 'cm_unprune')
         print("")
         print("---------------------------")
         print("Results for the pruned tree") 
