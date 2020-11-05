@@ -186,7 +186,7 @@ def pretty_evaluate (confusion_matrix, trees, name):
 	for t in trees:
 		depth_sum += find_depth(t)
 
-	average_depth = depth_sum / 10
+	average_depth = depth_sum / len(trees)
 
 	#Print values
 	print('Confusion matrix:')
@@ -510,7 +510,7 @@ def visualize_tree(tree, depth, name):
   #calls for visualise node function 
   visualize_node(tree, 0, 1, 0, 1, dy, axes)
   plt.show()
-  plt.savefig(name+".png")
+  plt.savefig(name + visualization_output_suffix +".png")
 
 
 #Visualises a node of the tree

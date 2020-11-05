@@ -1,7 +1,8 @@
-
 import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib.pyplot import cm
+
+visualization_output_suffix = "1"
 
 """
 LOAD DATA 
@@ -174,13 +175,18 @@ PERFORMANCE MEASURMENTS/EVALUATION
 """
 #Calculate all metrics and pretty print
 #Returns printed evaluation metrics and average precision, recall, f1, class_rate
-def pretty_evaluate (confusion_matrix, trees):
+def pretty_evaluate (confusion_matrix, trees, name):
 	#confusion_matrix: the calculated confusion matrix, int [4][4]
 	#Get precision, recall, f1, classification_rate (accuracy)
 	precision, recall = get_precision_recall (confusion_matrix)
 	f1 = [get_f1 (precision[i], recall[i]) for i in range (4)]
 	class_rate = get_classification_rate (confusion_matrix)
-	depth = find_depth(trees[1])
+
+	depth_sum = 0
+	for t in trees:
+		depth_sum += find_depth(t)
+
+	average_depth = depth_sum / len(trees)
 
 	#Print values
 	print('Confusion matrix:')
@@ -189,7 +195,7 @@ def pretty_evaluate (confusion_matrix, trees):
 		print('Predicted class (%i):\t'%(i+1), round(confusion_matrix[i][0],0),'\t', round(confusion_matrix[i][1],0),'\t',round(confusion_matrix[i][2],0),'\t', round(confusion_matrix[i][3],0))
 	print()
 
-	plot_matrix(confusion_matrix)
+	plot_matrix(confusion_matrix, name)
 	print()
 
 	print('Class \t | Precision \t\t| Recall \t\t| F1')
@@ -198,9 +204,9 @@ def pretty_evaluate (confusion_matrix, trees):
 	print()
 	print('Average classification rate:', class_rate)
 	print()
-	print('Depth of the final tree:', depth)
+	print('Average depth:', average_depth)
     
-	return precision, recall, f1, class_rate, depth
+	return precision, recall, f1, class_rate, average_depth
 
 #Precision and recall
 #Returns precision: float[4], recall: float[4]
@@ -478,66 +484,70 @@ def cross_validation(k, dataset, prune_tree=False):
         print("---------------------------")
         print("Results for the unpruned tree") 
         print("---------------------------")
-        pretty_evaluate(average_matrix, trees)
+        pretty_evaluate(average_matrix, trees, 'cm_unprune')
         print("")
         print("---------------------------")
         print("Results for the pruned tree") 
         print("---------------------------")
-        pretty_evaluate(average_matrix_prune, trees_prune)
+        pretty_evaluate(average_matrix_prune, trees_prune, 'cm_prune')
         return trees, trees_prune, average_matrix, average_matrix_prune
     else: 
         print("")
         print("---------------------------")
         print("Results for the unpruned tree") 
         print("---------------------------")
-        pretty_evaluate(average_matrix,trees)
+        pretty_evaluate(average_matrix,trees, 'cm_unprune')
         return trees, average_matrix
 
 """
-VISUALIZATION - ADD COMMENNTS
+VISUALIZATION
 """
 
-#general function
+#Visualises the tree 
 def visualize_tree(tree, depth, name):
   figure, axes = plt.subplots(figsize=(50, 10))
-  dy = 1/depth
+  dy = 1/depth	
+  #calls for visualise node function 
   visualize_node(tree, 0, 1, 0, 1, dy, axes)
   plt.show()
-  plt.savefig(name+".png")
+  plt.savefig(name + visualization_output_suffix +".png")
 
 
-#helper function
+#Visualises a node of the tree
 def visualize_node(node, xmin, xmax, ymin, ymax, dy, axes):
   annotation = 'att:' + str(node['attribute']) + '\nval:' + str(node['value'])
 
   midx = (xmax-xmin)/2 + xmin
   dx = (midx-xmin)/2
-
+  #if node is a leaf no lines out, just the box
   if is_leaf(node):
     axes.annotate('label: '+str(node['label']), xy=(midx, ymax), xycoords="data", va="center", ha="center", 
                   bbox=dict(boxstyle="round", fc="w"))
-
+  #Node left then visualise the node, and have lines going to the next nodes
   if node['left'] != None:
     axes.annotate(annotation, xy=(midx-dx, ymax-dy), xytext=(midx, ymax), va="center", ha="center", 
                   bbox=dict(boxstyle="square", fc="w"), arrowprops=dict(arrowstyle="->"))
     visualize_node(node['left'], xmin, midx, ymin, ymax-dy, dy, axes)
-
+  #Node left then visualise the node, and have lines going to the next nodes
   if node['right'] != None:
     axes.annotate(annotation, xy=(midx+dx, ymax-dy), xytext=(midx, ymax), va="center", ha="center", 
                   bbox=dict(boxstyle="square", fc="w"), arrowprops=dict(arrowstyle="->"))
     visualize_node(node['right'], midx, xmax, ymin, ymax-dy, dy, axes)
 
 #Plot the confusion matrix with a heat map
-def plot_matrix(confusion_matrix):
+def plot_matrix(confusion_matrix, name):
+	#confusion matrix
 	predicted = ["Predicted class (1)", "Predicted class (2)", "Predicted class (3)", "Predicted class (4)"]
 	actual = ["Actual class (1)", "Actual class (2)", "Actual class (3)", "Actual class (4)"]
+	
+	confusion = np.round(confusion_matrix,0)
 
-	confusion = np.round(confusion_matrix,1)
 	fig, ax = plt.subplots()
-
+	
 
 	im = ax.imshow(confusion, cmap=cm.summer)
-
+	
+	#set x/y labels
 	ax.set_xticks(np.arange(len(actual)))
 	ax.set_yticks(np.arange(len(predicted)))
 	ax.set_xticklabels(actual)
@@ -545,7 +555,7 @@ def plot_matrix(confusion_matrix):
 
 	plt.setp(ax.get_xticklabels(), rotation=45, ha="right",
 		rotation_mode="anchor")
-
+	#plot the confusion matrix values
 	for i in range(len(actual)):
 		for j in range(len(predicted)):
 			text = ax.text(j, i, confusion[i, j],
@@ -553,6 +563,7 @@ def plot_matrix(confusion_matrix):
 
 	#fig.tight_layout()
 	plt.show()
+	plt.savefig(name + visualization_output_suffix + ".png")
 
 
 """
