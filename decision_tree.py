@@ -1,7 +1,8 @@
-
 import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib.pyplot import cm
+
+visualization_output_suffix = "1"
 
 """
 LOAD DATA 
@@ -180,7 +181,12 @@ def pretty_evaluate (confusion_matrix, trees, name):
 	precision, recall = get_precision_recall (confusion_matrix)
 	f1 = [get_f1 (precision[i], recall[i]) for i in range (4)]
 	class_rate = get_classification_rate (confusion_matrix)
-	depth = find_depth(trees[1])
+
+	depth_sum = 0
+	for t in trees:
+		depth_sum += find_depth(t)
+
+	average_depth = depth_sum / 10
 
 	#Print values
 	print('Confusion matrix:')
@@ -198,7 +204,7 @@ def pretty_evaluate (confusion_matrix, trees, name):
 	print()
 	print('Average classification rate:', class_rate)
 	print()
-	print('Depth of the final tree:', depth)
+	print('Average depth:', average_depth)
     
 	return precision, recall, f1, class_rate, depth
 
@@ -557,7 +563,7 @@ def plot_matrix(confusion_matrix, name):
 
 	#fig.tight_layout()
 	plt.show()
-	plt.savefig(name+".png")
+	plt.savefig(name + visualization_output_suffix + ".png")
 
 
 """
