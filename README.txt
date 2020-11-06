@@ -37,7 +37,7 @@ TO RUN THE CODE:
 python3 decision_tree.py
 
 the code will train the decision trees on given datasets, 
-print evaluation metrics and save the visualizations as png on the folder.
+print evaluation metrics on terminal, and save the visualizations as png to the folder.
 
 
 You can check report.pdf for details about implementation and results.
