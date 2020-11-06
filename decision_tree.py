@@ -503,6 +503,9 @@ VISUALIZATION
 
 #Visualises the tree 
 def visualize_tree(tree, depth, name):
+  #tree: root node of tree
+  #depth: depth of tree as int
+  #name: name for png output file
   figure, axes = plt.subplots(figsize=(50, 10))
   dy = 1/depth	
   #calls for visualise node function 
