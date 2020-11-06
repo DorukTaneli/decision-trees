@@ -9,11 +9,12 @@ wifi_db: contains two txt files. Each line in the txt files has readings from 7 
 wifi_db/clean_dataset.txt: clean dataset with correct room labels for each reading.	
 wifi_db/noisy_dataset.txt: noisy dataset with some incorrect room labels for some readings.
 
-One of the trees as example visualization from the cross-validations:
-clean.png:		clean data, unpruned
-clean-pruned.png:	clean data, pruned
-noisy.png:		noisy data, unpruned
-noist-pruned.png:	noisy data, pruned
+Average CM - *:	Average confusion matrices for relevant cross-validations
+
+example-tree-*:	Visualizations of one of the trees from the relevant cross-validations
+
+all-data-*:	Visualizations for models trained on the entire dataset
+
 
 
 BEFORE RUNNING THE CODE
