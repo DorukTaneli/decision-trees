@@ -25,7 +25,7 @@ BEFORE RUNNING THE CODE
 		The code will run with provided dataset if the dataset is not changed.
 - OPTIONAL:	If you don't want to overwrite the images and generate new ones:
 		- Open decision_tree.py
-		- modify visualization_output_suffix on the fifth line
+		- modify visualization_output_suffix on the 7th line
 		- Save and close
 		- New images will be created with the provided suffix when running the code
 
