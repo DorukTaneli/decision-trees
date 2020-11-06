@@ -1,4 +1,6 @@
 import numpy as np
+import matplotlib
+matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 from matplotlib.pyplot import cm
 
@@ -507,7 +509,7 @@ def visualize_tree(tree, depth, name):
   #depth: depth of tree as int
   #name: name for png output file
   figure, axes = plt.subplots(figsize=(50, 10))
-  dy = 1/depth	
+  dy = 1/depth
   #calls for visualise node function 
   visualize_node(tree, 0, 1, 0, 1, dy, axes)
   plt.savefig(name + visualization_output_suffix +".png")

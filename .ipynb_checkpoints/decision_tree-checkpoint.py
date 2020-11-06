@@ -1,4 +1,6 @@
 import numpy as np
+import matplotlib
+matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 from matplotlib.pyplot import cm
 
@@ -175,7 +177,7 @@ PERFORMANCE MEASURMENTS/EVALUATION
 """
 #Calculate all metrics and pretty print
 #Returns printed evaluation metrics and average precision, recall, f1, class_rate
-def pretty_evaluate (confusion_matrix, trees, name):
+def pretty_evaluate (confusion_matrix, trees):
 	#confusion_matrix: the calculated confusion matrix, int [4][4]
 	#Get precision, recall, f1, classification_rate (accuracy)
 	precision, recall = get_precision_recall (confusion_matrix)
@@ -193,18 +195,16 @@ def pretty_evaluate (confusion_matrix, trees, name):
 	print('Actual class: \t\t(1) \t(2) \t(3) \t(4)')
 	for i in range(4):
 		print('Predicted class (%i):\t'%(i+1), round(confusion_matrix[i][0],0),'\t', round(confusion_matrix[i][1],0),'\t',round(confusion_matrix[i][2],0),'\t', round(confusion_matrix[i][3],0))
-	print()
 
-	plot_matrix(confusion_matrix, name)
 	print()
 
 	print('Class \t | Precision \t\t| Recall \t\t| F1')
 	for i in range(4):
-		print('(%i)\t |'%i, round(precision[i],4), '\t\t|', round(recall[i],4), '\t\t|', round(f1[i],4))
+		print('(%i)\t |'%i, format(round(precision[i],4),'.4f'), '\t\t|', format(round(recall[i],4), '.4f'), '\t\t|', format(round(f1[i],4),'.4f'))
 	print()
 	print('Average classification rate:', class_rate)
 	print()
-	print('Average depth:', average_depth)
+	print('Average depth:', round(average_depth))
     
 	return precision, recall, f1, class_rate, average_depth
 
@@ -389,7 +389,7 @@ VALIDATION
 """
 
 """
-STEP 1: The method train_test_split splits the data into a training set and a test set. 
+TRAIN-TEST-SPLIT: The method train_test_split splits the data into a training set and a test set.
 The method takes the dataset and the size of the test set as input (float value between 0 and 1, a common value would be 0.2).
 """ 
 #Return the train and the test set
@@ -408,7 +408,7 @@ def train_test_split(dataset, test_size_percent):
     return train, test
 
 """
-STEP 2: Devide the dataset into k folds for cross-validation
+K-FOLD SPLIT: Devide the dataset into k folds for cross-validation
 """
 def k_fold(k, dataset):
 	#k: number of folds for cross-valid
@@ -484,19 +484,19 @@ def cross_validation(k, dataset, prune_tree=False):
         print("---------------------------")
         print("Results for the unpruned tree") 
         print("---------------------------")
-        pretty_evaluate(average_matrix, trees, 'cm_unprune')
+        pretty_evaluate(average_matrix, trees)
         print("")
         print("---------------------------")
         print("Results for the pruned tree") 
         print("---------------------------")
-        pretty_evaluate(average_matrix_prune, trees_prune, 'cm_prune')
+        pretty_evaluate(average_matrix_prune, trees_prune)
         return trees, trees_prune, average_matrix, average_matrix_prune
     else: 
         print("")
         print("---------------------------")
         print("Results for the unpruned tree") 
         print("---------------------------")
-        pretty_evaluate(average_matrix,trees, 'cm_unprune')
+        pretty_evaluate(average_matrix,trees)
         return trees, average_matrix
 
 """
@@ -505,12 +505,16 @@ VISUALIZATION
 
 #Visualises the tree 
 def visualize_tree(tree, depth, name):
+  #tree: root node of tree
+  #depth: depth of tree as int
+  #name: name for png output file
   figure, axes = plt.subplots(figsize=(50, 10))
-  dy = 1/depth	
+  dy = 1/depth
   #calls for visualise node function 
   visualize_node(tree, 0, 1, 0, 1, dy, axes)
-  plt.show()
   plt.savefig(name + visualization_output_suffix +".png")
+  plt.show()
+
 
 
 #Visualises a node of the tree
@@ -561,9 +565,11 @@ def plot_matrix(confusion_matrix, name):
 			text = ax.text(j, i, confusion[i, j],
 				ha="center", va="center", color="black")
 
+	ax.set_title(name)
 	#fig.tight_layout()
-	plt.show()
 	plt.savefig(name + visualization_output_suffix + ".png")
+	plt.show()
+	
 
 
 """
@@ -576,16 +582,32 @@ def plot_matrix(confusion_matrix, name):
 print("\nCLEAN DATASET:")
 clean_trees, clean_trees_prune, clean_average_matrix, clean_average_matrix_prune = cross_validation(10, clean, True)
 
-visualize_tree(clean_trees[1], find_depth(clean_trees[1]), "clean")
-visualize_tree(clean_trees_prune[1], find_depth(clean_trees_prune[1]), "clean-pruned")
+visualize_tree(clean_trees[1], find_depth(clean_trees[1]), "example-tree-clean")
+visualize_tree(clean_trees_prune[1], find_depth(clean_trees_prune[1]), "example-tree-clean-pruned")
+
+plot_matrix(clean_average_matrix, 'Average CM - Clean')
+plot_matrix(clean_average_matrix_prune, 'Average CM - Clean Pruned')
+
+#Model trained on the entire clean dataset – not pruned (decision based on the outcome of nested cross-validation)
+final_tree_clean,_ = decision_tree_learning(clean)
+visualize_tree(final_tree_clean, find_depth(final_tree_clean), "all-data-clean")
 
 
 #NOISY DATA
 print("\nNOISY DATASET:")
 noisy_trees, noisy_trees_prune, noisy_average_matrix, noisy_average_matrix_prune = cross_validation(10, noisy, True)
 
-visualize_tree(noisy_trees[1], find_depth(noisy_trees[1]), "noisy")
-visualize_tree(noisy_trees_prune[1], find_depth(noisy_trees_prune[1]), "noisy-pruned")
+visualize_tree(noisy_trees[1], find_depth(noisy_trees[1]), "example-tree-noisy")
+visualize_tree(noisy_trees_prune[1], find_depth(noisy_trees_prune[1]), "example-tree-noisy-pruned")
+
+plot_matrix(noisy_average_matrix, 'Average CM - Noisy')
+plot_matrix(noisy_average_matrix_prune, 'Average CM - Noisy Pruned')
+
+# Model trained on the entire noisy data set – pruned (decision based on the outcome of nested cross-validation)
+train, val = train_test_split(noisy, 0.2)
+final_tree_noisy,_ = decision_tree_learning(train)
+final_tree_noisy_pruned = prune(final_tree_noisy, val)
+visualize_tree(final_tree_noisy_pruned, find_depth(final_tree_noisy_pruned), "all-data-noisy-pruned")
 
 
 
