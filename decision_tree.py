@@ -560,6 +560,7 @@ def plot_matrix(confusion_matrix, name):
 			text = ax.text(j, i, confusion[i, j],
 				ha="center", va="center", color="black")
 
+	ax.set_title(name)
 	#fig.tight_layout()
 	plt.savefig(name + visualization_output_suffix + ".png")
 	plt.show()
@@ -576,32 +577,32 @@ def plot_matrix(confusion_matrix, name):
 print("\nCLEAN DATASET:")
 clean_trees, clean_trees_prune, clean_average_matrix, clean_average_matrix_prune = cross_validation(10, clean, True)
 
-visualize_tree(clean_trees[1], find_depth(clean_trees[1]), "clean")
-visualize_tree(clean_trees_prune[1], find_depth(clean_trees_prune[1]), "clean-pruned")
+visualize_tree(clean_trees[1], find_depth(clean_trees[1]), "example-tree-clean")
+visualize_tree(clean_trees_prune[1], find_depth(clean_trees_prune[1]), "example-tree-clean-pruned")
 
-plot_matrix(clean_average_matrix, 'Clean Average CM')
-plot_matrix(clean_average_matrix_prune, 'Clean Noisy Average CM')
+plot_matrix(clean_average_matrix, 'Average CM - Clean')
+plot_matrix(clean_average_matrix_prune, 'Average CM - Clean Pruned')
 
 #Model trained on the entire clean dataset – not pruned (decision based on the outcome of nested cross-validation)
 final_tree_clean,_ = decision_tree_learning(clean)
-visualize_tree(final_tree_clean, 10)
+visualize_tree(final_tree_clean, find_depth(final_tree_clean), "all-data-clean")
 
 
 #NOISY DATA
 print("\nNOISY DATASET:")
 noisy_trees, noisy_trees_prune, noisy_average_matrix, noisy_average_matrix_prune = cross_validation(10, noisy, True)
 
-visualize_tree(noisy_trees[1], find_depth(noisy_trees[1]), "noisy")
-visualize_tree(noisy_trees_prune[1], find_depth(noisy_trees_prune[1]), "noisy-pruned")
+visualize_tree(noisy_trees[1], find_depth(noisy_trees[1]), "example-tree-noisy")
+visualize_tree(noisy_trees_prune[1], find_depth(noisy_trees_prune[1]), "example-tree-noisy-pruned")
 
-plot_matrix(noisy_average_matrix, 'Noisy Average CM')
-plot_matrix(noisy_average_matrix_prune, 'Prune Noisy Average CM')
+plot_matrix(noisy_average_matrix, 'Average CM - Noisy')
+plot_matrix(noisy_average_matrix_prune, 'Average CM - Noisy Pruned')
 
 # Model trained on the entire noisy data set – pruned (decision based on the outcome of nested cross-validation)
 train, val = train_test_split(noisy, 0.2)
 final_tree_noisy,_ = decision_tree_learning(train)
 final_tree_noisy_pruned = prune(final_tree_noisy, val)
-visualize_tree(final_tree_noisy_pruned, 20)
+visualize_tree(final_tree_noisy_pruned, find_depth(final_tree_noisy_pruned), "all-data-noisy-pruned")
 
 
 
